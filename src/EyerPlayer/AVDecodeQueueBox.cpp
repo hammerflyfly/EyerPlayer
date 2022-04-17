@@ -53,4 +53,29 @@ namespace Eyer
         decoderList.clear();
         return 0;
     }
+
+    int AVDecodeQueueBox::PutPacket(EyerAVPacket * packet)
+    {
+        int streamIndex = packet->GetStreamIndex();
+        for(int i=0;i<decoderList.size();i++) {
+            EyerDecodeQueueBase *decodeQueue = decoderList[i];
+            // TODO 此处有优化空间
+            EyerAVStream stream = decodeQueue->GetStream();
+            if(stream.GetStreamId() == streamIndex){
+                decodeQueue->PutAVPacket(packet);
+                return 0;
+            }
+        }
+        return -1;
+    }
+
+    int AVDecodeQueueBox::GetCacheSize()
+    {
+        int size = 0;
+        for(int i=0;i<decoderList.size();i++) {
+            EyerDecodeQueueBase *decodeQueue = decoderList[i];
+            size += decodeQueue->GetCacheSize();
+        }
+        return size;
+    }
 }

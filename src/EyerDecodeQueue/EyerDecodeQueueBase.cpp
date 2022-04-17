@@ -24,4 +24,9 @@ namespace Eyer
         cacheSize += packet->GetSize();
         return 0;
     }
+
+    EyerAVStream EyerDecodeQueueBase::GetStream()
+    {
+        return avStream;
+    }
 }

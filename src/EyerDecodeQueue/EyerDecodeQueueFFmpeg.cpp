@@ -35,6 +35,8 @@ namespace Eyer
             EyerLog("Decoder Init Error\n");
         }
 
+        EyerAVPacket * avPacket = nullptr;
+
         while(1){
             if(stopFlag){
                 break;
@@ -45,31 +47,43 @@ namespace Eyer
             }
 
             // 尝试取出一个 Packet
-            EyerAVPacket * avPacket = nullptr;
-            // Frame 缓存池
-            packetQueue.Lock();
-            if(packetQueue.Size() > 0){
-                avPacket = packetQueue.FrontPop();
+            if(avPacket == nullptr){
+                packetQueue.Lock();
+                if(packetQueue.Size() > 0){
+                    avPacket = packetQueue.FrontPop();
+                    cacheSize -= avPacket->GetSize();
+                }
+                packetQueue.Unlock();
             }
-            packetQueue.Unlock();
 
             if(avPacket == nullptr){
                 continue;
             }
+
+            /*
 
             decoder.SendPacket(avPacket);
             while (1){
                 EyerAVFrame * frame = new EyerAVFrame();
                 int ret = decoder.RecvFrame(*frame);
                 if(ret){
+                    if(frame != nullptr){
+                        delete frame;
+                        frame = nullptr;
+                    }
                     break;
                 }
-            }
 
+                if(frame != nullptr){
+                    delete frame;
+                    frame = nullptr;
+                }
+            }
             if(avPacket != nullptr){
                 delete avPacket;
                 avPacket = nullptr;
             }
+            */
         }
 
         EyerLog("EyerDecodeQueueFFmpeg Stop, Stream Id: %d\n", avStream.GetStreamId());

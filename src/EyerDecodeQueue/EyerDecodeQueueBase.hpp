@@ -18,6 +18,8 @@ namespace Eyer
         int GetCacheSize();
         int PutAVPacket(EyerAVPacket * packet);
 
+        EyerAVStream GetStream();
+
     protected:
         std::atomic_int cacheSize {0};
         EyerObserverQueue<EyerAVPacket *> packetQueue;

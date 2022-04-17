@@ -44,12 +44,39 @@ namespace Eyer
             decodeQueueBox.StartAllDecoder();
         }
 
-        while(1){
+        while(true){
             if(stopFlag){
                 break;
             }
+            // 2MB Cache
+            if(decodeQueueBox.GetCacheSize() >= 1024 * 1024 * 2){
+                continue;
+            }
+
+            EyerLog("Cache Size: %d\n", decodeQueueBox.GetCacheSize());
+
+            EyerAVPacket * packet = new EyerAVPacket();
+            int ret = reader->Read(packet);
+            if(ret){
+                // 文件结尾或者出错
+                // TODO
+                if(packet != nullptr){
+                    delete packet;
+                    packet = nullptr;
+                }
+                continue;
+            }
+            ret = decodeQueueBox.PutPacket(packet);
+            if(ret){
+                // 插入错误
+                if(packet != nullptr){
+                    delete packet;
+                    packet = nullptr;
+                }
+            }
         }
 
+        // 结束，把解码器清空
         decodeQueueBox.StopAllDecoder();
 
         if(reader != nullptr){

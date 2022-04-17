@@ -21,6 +21,10 @@ namespace Eyer
         int StartAllDecoder();
         int StopAllDecoder();
 
+        int PutPacket(EyerAVPacket * packet);
+
+        int GetCacheSize();
+
     private:
         std::vector<EyerAVStream> streamList;
         std::vector<EyerDecodeQueueBase *> decoderList;
